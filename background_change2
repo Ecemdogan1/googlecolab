@@ -1,0 +1,29 @@
+from google.colab.patches import cv2_imshow
+import cv2
+img = cv2.imread("RESİM YOLU")
+cv2_imshow(img)
+image = cv2.imread("Dosya yolu")
+
+# Şimdi resim, resmi oluşturan piksellerin hepsini depolayan bir nesnedir
+# Piksellerin değerlerini kontrol etmek için basitçe resmi yazdırabilirsiniz
+# Ayrıca resmin değerlerini de yazdırabilirsiniz
+height, width, channels = image.shape
+print("Resmin genişliği:", width)
+print("Resmin yüksekliği:", height)
+print("Kanal sayısı:", channels)
+!pip install rembg
+import numpy as np
+
+def change_back(background, img):
+""" Resimlerin siyah arka planını başka bir görüntüyle değiştiren bir fonksiyon.
+    İki argüman kabul eder: arka plan görüntüsü (background) ve görüntünün kendisi (img).
+    Fonksiyon, görüntünün sol üst köşesinden başlayacak. Siyah pikselleri (0 değerine sahip olanları) arayacak
+    ve onları arka plan görüntüsünün pikselleriyle değiştirecek"""
+
+    x, y = 0, 0
+    background = cv2.resize(background, (img.shape[1], img.shape[0]), interpolation = cv2.INTER_AREA)
+    res = np.copy(background)
+    place = res[y: y + img.shape[0], x: x + img.shape[1]]
+    a = img[..., 3:].repeat(3, axis=2).astype('uint16')
+    place[...] = (place.astype('uint16') * (255 - a) // 255) + img[..., :3].astype('uint16') * a // 255
+    return res
